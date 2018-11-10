@@ -19,23 +19,55 @@ public class UserServiceTest {
     private UserService userService;
 
     @Test
-    public void shouldAddUserToDatabase() {
+    public void T1_shouldAddUserToDatabase() {
         //given
         User user = new User("User1", "Pass1", "email@example.pl");
 
         //when
         User addedUser = userService.addUser(user);
+        User userFromDb = userService.getUserByName(user.getName());
 
         //then
         assertThat(addedUser, equalTo(user));
+        assertThat(userFromDb, equalTo(user));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAddUserWithInvalidData() {
+    public void T2_shouldNotAddUserWithInvalidData() {
         //given
         User user = new User("", "", "");
 
         //when
         userService.addUser(user);
+    }
+
+    @Test
+    public void T3_shouldGetUserFromDatabaseByName() {
+        //given
+        User user = new User("User2", "Pass2", "email2@example.pl");
+        userService.addUser(user);
+
+        //when
+        User responseUser = userService.getUserByName(user.getName());
+
+        //then
+        assertThat(responseUser, equalTo(user));
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void T4_shouldThrowExceptionIfGettingUserIsNotInDatabase() {
+        User responseUser = userService.getUserByName("UserNotExist");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void T5_shouldThrowExceptionIfUserNameIsInDatabase() {
+        //given
+        User user1 = new User("User3", "Pass1", "email@example.pl");
+        User user2 = new User("User3", "Pass1", "email@example.pl");
+
+        //when
+        userService.addUser(user1);
+        userService.addUser(user2);
     }
 }

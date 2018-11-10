@@ -5,6 +5,9 @@ import pl.wnek.registration.model.User;
 import pl.wnek.registration.repository.UserDao;
 import pl.wnek.registration.validator.RegistrationValidator;
 
+import javax.validation.constraints.Null;
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -18,6 +21,17 @@ public class UserService {
 
     public User addUser(User user) {
         if (!registrationValidator.isValid(user)) throw new IllegalArgumentException();
+        if (isUserWithNameInDatabase(user.getName())) throw new NullPointerException();
         return userDao.save(user);
+    }
+
+    public User getUserByName(String name) {
+        return Optional.ofNullable(userDao.findByName(name))
+                .get()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isUserWithNameInDatabase(String name) {
+        return userDao.findByName(name).isPresent();
     }
 }

@@ -1,6 +1,5 @@
 package pl.wnek.registration.validator;
 
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 import pl.wnek.registration.model.User;
 

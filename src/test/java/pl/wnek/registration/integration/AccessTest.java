@@ -50,7 +50,7 @@ public class AccessTest {
     @Test
     public void T03_shouldReturnStatusOkIfUserIsNotLoginOnRegistrationPage() {
         //given
-        String url = "/registration";
+        String url = "/user";
 
         //when
         ResponseEntity<String> response = testRestTemplate.getForEntity(url, String.class);
