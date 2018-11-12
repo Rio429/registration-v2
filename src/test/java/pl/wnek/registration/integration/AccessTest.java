@@ -8,6 +8,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import pl.wnek.registration.controller.UserController;
+import pl.wnek.registration.model.User;
+import pl.wnek.registration.service.UserService;
 
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,6 +22,9 @@ public class AccessTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
+
+    @Autowired
+    private UserController userController;
 
     @Test
     public void T01_shouldReturnStatusForbiddenIfUserIsNotLoginOnHomePage() {
@@ -33,7 +39,7 @@ public class AccessTest {
     }
 
     @Test
-    public void T02_shouldReturnStatusOkIfUserIsLoginOnHomePage() {
+    public void T02_shouldReturnStatusUnauthorizedIfUserTryLoginWithoutRegisterOnHomePage() {
         //given
         String url = "/home";
         String user = "user1";
@@ -44,7 +50,7 @@ public class AccessTest {
         .getForEntity(url, String.class);
 
         //then
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
     }
 
     @Test
@@ -57,5 +63,23 @@ public class AccessTest {
 
         //then
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void T04_shouldReturnStatusOkOnlyForRegisterUser() {
+        //given
+        User user = new User("register", "register", "register@mail.pl");
+        testRestTemplate.postForEntity("/user", user, User.class);
+
+        //when
+        ResponseEntity<String> response = testRestTemplate
+                .withBasicAuth(user.getName(), user.getPassword())
+                .getForEntity("/home", String.class);
+
+        //then
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+
+
+
     }
 }

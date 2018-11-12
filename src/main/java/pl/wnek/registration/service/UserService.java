@@ -5,7 +5,6 @@ import pl.wnek.registration.model.User;
 import pl.wnek.registration.repository.UserDao;
 import pl.wnek.registration.validator.RegistrationValidator;
 
-import javax.validation.constraints.Null;
 import java.util.Optional;
 
 @Service
