@@ -78,8 +78,5 @@ public class AccessTest {
 
         //then
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
-
-
-
     }
 }

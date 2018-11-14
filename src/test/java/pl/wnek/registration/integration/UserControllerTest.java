@@ -35,7 +35,7 @@ public class UserControllerTest {
     @Test
     public void shouldAddUser() {
         //given
-       User user = new User("User", "password", "example@mail.pl");
+       User user = new User("User", "password", "mail@example.pl");
 
        //when
        ResponseEntity<User> response = testRestTemplate.postForEntity(url, user, User.class);
