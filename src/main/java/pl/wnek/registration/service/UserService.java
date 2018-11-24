@@ -30,6 +30,10 @@ public class UserService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    public User updateUser(User user) {
+        return userDao.save(user);
+    }
+
     private boolean isUserWithNameInDatabase(String name) {
         return userDao.findByName(name).isPresent();
     }

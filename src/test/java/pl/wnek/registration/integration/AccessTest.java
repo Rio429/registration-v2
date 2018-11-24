@@ -9,10 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.wnek.registration.controller.UserController;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
+import pl.wnek.registration.service.TokenService;
 import pl.wnek.registration.service.UserService;
 
 
+import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -25,6 +28,9 @@ public class AccessTest {
 
     @Autowired
     private UserController userController;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Test
     public void T01_shouldReturnStatusForbiddenIfUserIsNotLoginOnHomePage() {
@@ -66,10 +72,31 @@ public class AccessTest {
     }
 
     @Test
-    public void T04_shouldReturnStatusOkOnlyForRegisterUser() {
+    public void T04_shouldReturnStatusUnauthorizedForUserWithoutConfirmByMail() {
+        //given
+        User user = new User("notConfrimBymail", "register", "register@mail.pl");
+        testRestTemplate.postForEntity("/user", user, User.class);
+
+        //when
+        ResponseEntity<String> response = testRestTemplate
+                .withBasicAuth(user.getName(), user.getPassword())
+                .getForEntity("/home", String.class);
+
+        //then
+        assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+    }
+
+
+    @Test
+    public void T05_shouldReturnStatusOkForUserWithConfirmation() {
         //given
         User user = new User("register", "register", "register@mail.pl");
         testRestTemplate.postForEntity("/user", user, User.class);
+        Token token = tokenService.getToken(2L);
+        String confirmUrl = "/confirm-registration?token=" + token.getToken();
+
+
+        testRestTemplate.getForEntity(confirmUrl, Boolean.class);
 
         //when
         ResponseEntity<String> response = testRestTemplate

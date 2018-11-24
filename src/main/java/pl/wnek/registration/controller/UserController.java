@@ -1,12 +1,11 @@
 package pl.wnek.registration.controller;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.RegistrationClientEvent;
+import pl.wnek.registration.service.TokenService;
 import pl.wnek.registration.service.UserService;
 
 @RestController
@@ -14,22 +13,37 @@ public class UserController {
 
     private UserService userService;
     private ApplicationEventPublisher publisher;
+    private TokenService tokenService;
 
-    public UserController(UserService userService, ApplicationEventPublisher publisher) {
+    public UserController(UserService userService, ApplicationEventPublisher publisher, TokenService tokenService) {
         this.userService = userService;
         this.publisher = publisher;
+        this.tokenService = tokenService;
     }
 
     @PostMapping(value = "/user")
     public User addUser(@RequestBody User user) {
         User addedUser = userService.addUser(user);
-        publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail()));
+        Token token = tokenService.addToken(addedUser);
+        publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getToken()));
         return addedUser;
     }
 
     @GetMapping(value = "/user")
     public String getUser() {
         return "Hello World";
+    }
+
+    @GetMapping(value = "/confirm-registration")
+    public boolean confirmRegistration(@RequestParam("token") String tokenText) {
+        Token token = tokenService.getToken(tokenText);
+        if(tokenService.isTokenExpired(token)) {
+            return false;
+        }
+        User user = token.getUser();
+        user.setEnabled(true);
+        userService.updateUser(user);
+        return true;
     }
 
     @GetMapping(value = "/home")

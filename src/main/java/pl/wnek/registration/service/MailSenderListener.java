@@ -18,13 +18,12 @@ public class MailSenderListener implements ApplicationListener<RegistrationClien
         SimpleMailMessage mailMessage = new SimpleMailMessage();
 
         setMailData(registrationClientEvent, mailMessage);
-
         mailSender.send(mailMessage);
     }
 
     private void setMailData(RegistrationClientEvent registrationClientEvent, MailMessage mailMessage) {
         mailMessage.setTo(registrationClientEvent.getEmail());
         mailMessage.setSubject("temp");
-        mailMessage.setText("temp");
+        mailMessage.setText("localhost:8080/confirm-resgistration?token=" + registrationClientEvent.getTokenText());
     }
 }

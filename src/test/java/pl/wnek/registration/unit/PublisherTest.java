@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.MailSenderListener;
 import pl.wnek.registration.service.RegistrationClientEvent;
@@ -29,9 +30,10 @@ public class PublisherTest {
     public void publishRegistrationEventAndCheckIfMailSenderListenerIsRunning() {
         //given
         User user = new User("user1", "pass1", "mail@example.pl");
+        String token = "token";
 
         //when
-        publisher.publishEvent(new RegistrationClientEvent(user.getEmail()));
+        publisher.publishEvent(new RegistrationClientEvent(user.getEmail(), token));
 
         //then
         verify(mailSenderListener, times(1)).onApplicationEvent(any(RegistrationClientEvent.class));

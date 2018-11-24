@@ -9,7 +9,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.wnek.registration.controller.UserController;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
+import pl.wnek.registration.repository.TokenDao;
+import pl.wnek.registration.service.TokenService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
@@ -24,6 +27,12 @@ public class UserControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private TokenDao tokenDao;
 
     private String url;
 
@@ -42,5 +51,33 @@ public class UserControllerTest {
 
        //then
         assertThat(response.getBody(), is(user));
+    }
+
+    @Test
+    public void shouldAddTokenToUser() {
+        //given
+        User user = new User("User1", "pass1", "wojtekw429@interia.pl");
+
+        //when
+        testRestTemplate.postForEntity(url, user, User.class);
+        Token token = tokenService.getToken(2L);
+
+        //then
+        assertThat(token.getUser(), is(user));
+    }
+
+    @Test
+    public void shouldConfirmRegistrationToUser() {
+        //given //TODO poprawic 2L
+        User user = new User("User1", "pass1", "example@mail.pl");
+        testRestTemplate.postForEntity(url, user, User.class);
+        Token token = tokenService.getToken(2L);
+        String confirmUrl = "/confirm-registration?token=" + token.getToken();
+
+        //when
+        ResponseEntity<Boolean> response = testRestTemplate.getForEntity(confirmUrl, Boolean.class);
+
+        //then
+        assertThat(response.getBody(), is(true));
     }
 }
