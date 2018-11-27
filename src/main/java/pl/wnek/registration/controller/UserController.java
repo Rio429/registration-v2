@@ -23,6 +23,7 @@ public class UserController {
 
     @PostMapping(value = "/user")
     public User addUser(@RequestBody User user) {
+        System.out.println("fdsf");
         User addedUser = userService.addUser(user);
         Token token = tokenService.addToken(addedUser);
         publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getToken()));
@@ -48,6 +49,18 @@ public class UserController {
 
     @GetMapping(value = "/home")
     public String tem2p() {
+        System.out.println("home");
         return "Hello World2";
+    }
+
+    @GetMapping(value = "/resend-mail")
+    public String resendMail(@RequestParam("user") String userName) {
+        System.out.println("DuAP!:");
+
+        User user = userService.getUserByName(userName);
+        Token token = tokenService.addToken(user);
+        System.out.println("DuAP!:");
+        publisher.publishEvent(new RegistrationClientEvent(user.getEmail(), token.getToken()));
+        return "ok";
     }
 }

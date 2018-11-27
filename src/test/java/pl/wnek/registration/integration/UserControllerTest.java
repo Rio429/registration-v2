@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestClientException;
 import pl.wnek.registration.controller.UserController;
 import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
@@ -79,5 +80,35 @@ public class UserControllerTest {
 
         //then
         assertThat(response.getBody(), is(true));
+    }
+
+    @Test
+    public void shouldConfirmRegistrationBySecondToken() {
+        //given
+        User user = new User("User2", "pass1", "example@mail.pl");
+        testRestTemplate.postForEntity(url, user, User.class);
+        testRestTemplate.getForEntity("/resend-mail", String.class);
+        Token token = tokenService.getToken(2L);
+        String confirmUrl = "/confirm-registration?token=" + token.getToken();
+
+        //when
+        ResponseEntity<Boolean> response = testRestTemplate.getForEntity(confirmUrl, Boolean.class);
+
+        //then
+        assertThat(response.getBody(), is(true));
+    }
+
+
+    @Test(expected = RestClientException.class)
+    public void shouldNotConfirmRegistrationByFirstTokenIfWasSendingSecond() {
+        //given
+        User user = new User("User2", "pass1", "example@mail.pl");
+        testRestTemplate.postForEntity(url, user, User.class);
+        Token token = tokenService.getToken(2L);
+        String confirmUrl = "/confirm-registration?token=" + token.getToken();
+
+        //when
+        testRestTemplate.getForEntity("/resend-mail?user=" + user.getName(), String.class);
+        testRestTemplate.getForEntity(confirmUrl, Boolean.class);
     }
 }
