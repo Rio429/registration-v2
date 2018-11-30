@@ -23,7 +23,6 @@ public class UserController {
 
     @PostMapping(value = "/user")
     public User addUser(@RequestBody User user) {
-        System.out.println("fdsf");
         User addedUser = userService.addUser(user);
         Token token = tokenService.addToken(addedUser);
         publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getToken()));
@@ -33,6 +32,13 @@ public class UserController {
     @GetMapping(value = "/user")
     public String getUser() {
         return "Hello World";
+    }
+
+    @GetMapping(value = "/test")
+    public void dupa() {
+        User user = new User("Wojciech", "pass1", "example@mail.pl");
+
+        addUser(user);
     }
 
     @GetMapping(value = "/confirm-registration")

@@ -10,6 +10,7 @@ import pl.wnek.registration.service.UserService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -69,5 +70,17 @@ public class UserServiceTest {
         //when
         userService.addUser(user1);
         userService.addUser(user2);
+    }
+
+    @Test
+    public void T6_shouldEncodePassword() {
+        //given
+        User user = new User("User", "pass1", "email@example.pl");
+
+        //when
+        userService.addUser(user);
+
+        //then
+        assertTrue(user.getPassword().length() > 20);
     }
 }

@@ -18,14 +18,10 @@ public class UserDetail implements UserDetails {
 
     private User user;
 
-    private PasswordEncoder passwordEncoder;
-
     public UserDetail() {}
 
     public UserDetail(User user) {
         this.user = user;
-        this.passwordEncoder = getPasswordEncoder();
-
     }
 
     @Override
@@ -37,7 +33,7 @@ public class UserDetail implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passwordEncoder.encode(user.getPassword());
+        return user.getPassword();
     }
 
     @Override
@@ -78,16 +74,4 @@ public class UserDetail implements UserDetails {
         return Objects.hash(user);
     }
 
-    @Override
-    public String toString() {
-        return "UserDetail{" +
-                "user=" + user +
-                ", passwordEncoder=" + passwordEncoder +
-                '}';
-    }
-
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
 }
