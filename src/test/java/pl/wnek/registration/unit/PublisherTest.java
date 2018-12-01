@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.MailSenderListener;
 import pl.wnek.registration.service.RegistrationClientEvent;

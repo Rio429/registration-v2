@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.wnek.registration.model.Token;
+import pl.wnek.registration.model.RegistrationToken;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.TokenCreator;
 import pl.wnek.registration.service.TokenService;
@@ -37,15 +37,15 @@ public class TokenServiceTest {
     public void shouldAddToken() {
         //given
         User user = new User("user1", "pass1", "example@mail.pl");
-        Token token = new Token("token", LocalDateTime.now(), user);
+        RegistrationToken token = new RegistrationToken("token", LocalDateTime.now(), user);
 
         //when
         User addedUser = userService.addUser(user);
         when(tokenCreator.createToken(addedUser)).thenReturn(token);
-        Token addedToken = tokenService.addToken(addedUser);
+        RegistrationToken addedToken = tokenService.addToken(addedUser);
 
         //then
-        assertThat(addedToken.getToken().length(), greaterThan(1));
+        assertThat(addedToken.getTokenText().length(), greaterThan(1));
         assertThat(addedToken.getUser().getName(), is(addedUser.getName()));
         assertThat(addedToken.getCreatedDate().getDayOfMonth(), is(LocalDateTime.now().getDayOfMonth()));
 
@@ -55,17 +55,17 @@ public class TokenServiceTest {
     public void shouldGetToken() {
         //given
         User user = new User("user2", "pass1", "example@mail.pl");
-        Token token = new Token("tokenText", LocalDateTime.now(), user);
+        RegistrationToken token = new RegistrationToken("tokenText", LocalDateTime.now(), user);
 
         //when
         User addedUser = userService.addUser(user);
 
         when(tokenCreator.createToken(addedUser)).thenReturn(token);
         tokenService.addToken(addedUser);
-        Token gettedToken = tokenService.getToken("tokenText");
+        RegistrationToken gettedToken = tokenService.getToken("tokenText");
 
         //then
-        assertThat(gettedToken.getToken(), equalTo(token.getToken()));
+        assertThat(gettedToken.getTokenText(), equalTo(token.getTokenText()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -77,7 +77,7 @@ public class TokenServiceTest {
     public void shouldNotValidIfTokenIsExpired() {
         //given
         User user = new User("user3", "pass1", "example@mail.pl");
-        Token token = new Token("text", LocalDateTime.now().minusHours(25), user);
+        RegistrationToken token = new RegistrationToken("text", LocalDateTime.now().minusHours(25), user);
 
         //when
         boolean isExpired = tokenService.isTokenExpired(token);
@@ -91,7 +91,7 @@ public class TokenServiceTest {
     public void shouldValidIfTokenIsNotExpired() {
         //given
         User user = new User("user3", "pass1", "example@mail.pl");
-        Token token = new Token("text", LocalDateTime.now().minusHours(23), user);
+        RegistrationToken token = new RegistrationToken("text", LocalDateTime.now().minusHours(23), user);
 
         //when
         boolean isExpired = tokenService.isTokenExpired(token);

@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.wnek.registration.model.Token;
+import pl.wnek.registration.model.RegistrationToken;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.TokenService;
 import pl.wnek.registration.service.UserService;
@@ -31,11 +31,11 @@ public class TokenIntegrationTest {
 
         //when
         User addedUser = userService.addUser(user);
-        Token fistToken = tokenService.addToken(addedUser);
-        Token secondToken = tokenService.addToken(addedUser);
+        RegistrationToken fistToken = tokenService.addToken(addedUser);
+        RegistrationToken secondToken = tokenService.addToken(addedUser);
 
         //then
-        tokenService.getToken(fistToken.getToken());
+        tokenService.getToken(fistToken.getTokenText());
     }
 
     @Test
@@ -45,11 +45,11 @@ public class TokenIntegrationTest {
 
         //when
         userService.addUser(user);
-        Token addedToken = tokenService.addToken(user);
-        Token gettedToken = tokenService.getToken(user);
+        RegistrationToken addedToken = tokenService.addToken(user);
+        RegistrationToken gettedToken = tokenService.getToken(user);
 
         //then
-        assertThat(addedToken.getToken(), is(gettedToken.getToken()));
+        assertThat(addedToken.getTokenText(), is(gettedToken.getTokenText()));
     }
 
 

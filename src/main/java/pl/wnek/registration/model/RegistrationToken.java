@@ -1,37 +1,36 @@
 package pl.wnek.registration.model;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-public class Token {
+public class RegistrationToken {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String token;
+    private String tokenText;
     private LocalDateTime createdDate;
 
     @OneToOne
     @JoinColumn
     private User user;
 
-    public Token() {}
+    public RegistrationToken() {}
 
-    public Token(String token, LocalDateTime createdDate, User user) {
-        this.token = token;
+    public RegistrationToken(String tokenText, LocalDateTime createdDate, User user) {
+        this.tokenText = tokenText;
         this.createdDate = createdDate;
         this.user = user;
     }
 
-    public String getToken() {
-        return token;
+    public String getTokenText() {
+        return tokenText;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setTokenText(String tokenText) {
+        this.tokenText = tokenText;
     }
 
     public LocalDateTime getCreatedDate() {

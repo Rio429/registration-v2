@@ -7,11 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestClientException;
 import pl.wnek.registration.controller.UserController;
-import pl.wnek.registration.model.Token;
+import pl.wnek.registration.model.RegistrationToken;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.repository.TokenDao;
 import pl.wnek.registration.service.TokenService;
@@ -64,7 +62,7 @@ public class UserControllerTest {
         //when
         testRestTemplate.postForEntity(url, user, User.class);
 
-        Token token = tokenService.getToken(2L);
+        RegistrationToken token = tokenService.getToken(2L);
 
         //then
         assertThat(token.getUser().getName(), is(user.getName()));
@@ -75,8 +73,8 @@ public class UserControllerTest {
         //given //TODO poprawic 2L
         User user = new User("User1", "pass1", "example@mail.pl");
         testRestTemplate.postForEntity(url, user, User.class);
-        Token token = tokenService.getToken(2L);
-        String confirmUrl = "/confirm-registration?token=" + token.getToken();
+        RegistrationToken token = tokenService.getToken(2L);
+        String confirmUrl = "/confirm-registration?token=" + token.getTokenText();
 
         //when
         ResponseEntity<Boolean> response = testRestTemplate.getForEntity(confirmUrl, Boolean.class);
@@ -91,8 +89,8 @@ public class UserControllerTest {
         User user = new User("User2", "pass1", "example@mail.pl");
         testRestTemplate.postForEntity(url, user, User.class);
         testRestTemplate.getForEntity("/resend-mail", String.class);
-        Token token = tokenService.getToken(2L);
-        String confirmUrl = "/confirm-registration?token=" + token.getToken();
+        RegistrationToken token = tokenService.getToken(2L);
+        String confirmUrl = "/confirm-registration?token=" + token.getTokenText();
 
         //when
         ResponseEntity<Boolean> response = testRestTemplate.getForEntity(confirmUrl, Boolean.class);
@@ -107,8 +105,8 @@ public class UserControllerTest {
         //given
         User user = new User("User2", "pass1", "example@mail.pl");
         testRestTemplate.postForEntity(url, user, User.class);
-        Token token = tokenService.getToken(2L);
-        String confirmUrl = "/confirm-registration?token=" + token.getToken();
+        RegistrationToken token = tokenService.getToken(2L);
+        String confirmUrl = "/confirm-registration?token=" + token.getTokenText();
 
         //when
         testRestTemplate.getForEntity("/resend-mail?user=" + user.getName(), String.class);

@@ -2,7 +2,7 @@ package pl.wnek.registration.controller;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
-import pl.wnek.registration.model.Token;
+import pl.wnek.registration.model.RegistrationToken;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.RegistrationClientEvent;
 import pl.wnek.registration.service.TokenService;
@@ -24,8 +24,8 @@ public class UserController {
     @PostMapping(value = "/user")
     public User addUser(@RequestBody User user) {
         User addedUser = userService.addUser(user);
-        Token token = tokenService.addToken(addedUser);
-        publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getToken()));
+        RegistrationToken token = tokenService.addToken(addedUser);
+        publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getTokenText()));
         return addedUser;
     }
 
@@ -43,7 +43,7 @@ public class UserController {
 
     @GetMapping(value = "/confirm-registration")
     public boolean confirmRegistration(@RequestParam("token") String tokenText) {
-        Token token = tokenService.getToken(tokenText);
+        RegistrationToken token = tokenService.getToken(tokenText);
         if(tokenService.isTokenExpired(token)) {
             return false;
         }
@@ -64,9 +64,9 @@ public class UserController {
         System.out.println("DuAP!:");
 
         User user = userService.getUserByName(userName);
-        Token token = tokenService.addToken(user);
+        RegistrationToken token = tokenService.addToken(user);
         System.out.println("DuAP!:");
-        publisher.publishEvent(new RegistrationClientEvent(user.getEmail(), token.getToken()));
+        publisher.publishEvent(new RegistrationClientEvent(user.getEmail(), token.getTokenText()));
         return "ok";
     }
 }
