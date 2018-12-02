@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import pl.wnek.registration.controller.UserController;
 import pl.wnek.registration.model.RegistrationToken;
 import pl.wnek.registration.model.User;
-import pl.wnek.registration.service.TokenService;
+import pl.wnek.registration.token.TokenService;
 
 
 import static org.hamcrest.CoreMatchers.is;

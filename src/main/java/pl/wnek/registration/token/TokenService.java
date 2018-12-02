@@ -1,4 +1,4 @@
-package pl.wnek.registration.service;
+package pl.wnek.registration.token;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class TokenService {
     private TokenCreator tokenCreator;
 
     public RegistrationToken addToken(User user) {
-        RegistrationToken token = tokenCreator.createToken(user);
+        RegistrationToken token = tokenCreator.createRegistrationToken(user);
         tokenDao.findByUser(user).ifPresent(t -> token.setId(t.getId()));
         return tokenDao.save(token);
     }

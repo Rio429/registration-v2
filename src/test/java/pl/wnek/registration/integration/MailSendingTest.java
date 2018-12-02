@@ -13,6 +13,8 @@ import pl.wnek.registration.controller.UserController;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.MailSenderListener;
 import pl.wnek.registration.service.RegistrationClientEvent;
+import pl.wnek.registration.service.ResetPasswordEvent;
+import pl.wnek.registration.service.TempSenderListener;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -29,6 +31,9 @@ public class MailSendingTest {
     @MockBean
     private MailSenderListener mailSenderListener;
 
+    @MockBean
+    private TempSenderListener tempSenderListener;
+
     @Test
     public void ifUserCanBeRegisterPublishRegistrationEvent() {
         //given
@@ -39,6 +44,20 @@ public class MailSendingTest {
 
         //then
         verify(mailSenderListener, times(1)).onApplicationEvent(any(RegistrationClientEvent.class));
+    }
+
+
+    @Test
+    public void ifUserCanBeDupaPublishRegistrationEvent() {
+        //given
+        User user = new User("user1", "pass1", "example@mail.pl");
+
+        //when
+        userController.addUser(user);
+        userController.resetPassword("user1");
+
+        //then
+        verify(tempSenderListener, times(1)).onApplicationEvent(any(ResetPasswordEvent.class));
     }
 
     @Test

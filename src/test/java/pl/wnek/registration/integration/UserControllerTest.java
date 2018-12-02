@@ -10,9 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.wnek.registration.controller.UserController;
 import pl.wnek.registration.model.RegistrationToken;
+import pl.wnek.registration.model.ResetPasswordToken;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.repository.TokenDao;
-import pl.wnek.registration.service.TokenService;
+import pl.wnek.registration.token.ResetPasswordTokenService;
+import pl.wnek.registration.token.TokenService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,6 +35,9 @@ public class UserControllerTest {
 
     @Autowired
     private TokenDao tokenDao;
+
+    @Autowired
+    private ResetPasswordTokenService resetPasswordTokenService;
 
     private String url;
 
@@ -111,5 +116,20 @@ public class UserControllerTest {
         //when
         testRestTemplate.getForEntity("/resend-mail?user=" + user.getName(), String.class);
         testRestTemplate.getForEntity(confirmUrl, Boolean.class);
+    }
+    ///===============
+    @Test
+    public void dupa() {
+        //given
+//        User user = new User("User1", "pass1", "wojtekw429@interia.pl");
+
+        //when
+//        testRestTemplate.postForEntity(url, user, User.class);
+        testRestTemplate.getForEntity("/dupa?b=User1", String.class);
+
+//        ResetPasswordToken token = resetPasswordTokenService.getToken(3L);
+//        System.out.println("Token " + token.getUser());
+
+        //then
     }
 }

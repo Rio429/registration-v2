@@ -1,7 +1,6 @@
 package pl.wnek.registration.service;
 
 import org.springframework.context.ApplicationEvent;
-import pl.wnek.registration.model.User;
 
 public class RegistrationClientEvent extends ApplicationEvent {
 

@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.wnek.registration.model.RegistrationToken;
 import pl.wnek.registration.model.User;
-import pl.wnek.registration.service.TokenService;
+import pl.wnek.registration.token.TokenService;
 import pl.wnek.registration.service.UserService;
 
 import static org.hamcrest.MatcherAssert.assertThat;

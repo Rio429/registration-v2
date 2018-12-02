@@ -29,7 +29,8 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers( "/user", "/confirm-registration**", "/resend-mail**", "/console/**", "/test")
+                .antMatchers( "/user", "/confirm-registration**", "/resend-mail**", "/console/**", "/test",
+                        "/reset-password/**", "/dupa/**")
                 .permitAll()
         .anyRequest().fullyAuthenticated().and().httpBasic();
 //        http.authorizeRequests().anyRequest().permitAll();

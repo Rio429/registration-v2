@@ -3,9 +3,12 @@ package pl.wnek.registration.controller;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 import pl.wnek.registration.model.RegistrationToken;
+import pl.wnek.registration.model.ResetPasswordToken;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.RegistrationClientEvent;
-import pl.wnek.registration.service.TokenService;
+import pl.wnek.registration.service.ResetPasswordEvent;
+import pl.wnek.registration.token.ResetPasswordTokenService;
+import pl.wnek.registration.token.TokenService;
 import pl.wnek.registration.service.UserService;
 
 @RestController
@@ -14,11 +17,14 @@ public class UserController {
     private UserService userService;
     private ApplicationEventPublisher publisher;
     private TokenService tokenService;
+    private ResetPasswordTokenService resetPasswordTokenService;
 
-    public UserController(UserService userService, ApplicationEventPublisher publisher, TokenService tokenService) {
+    public UserController(UserService userService, ApplicationEventPublisher publisher, TokenService tokenService,
+                          ResetPasswordTokenService resetPasswordTokenService) {
         this.userService = userService;
         this.publisher = publisher;
         this.tokenService = tokenService;
+        this.resetPasswordTokenService = resetPasswordTokenService;
     }
 
     @PostMapping(value = "/user")
@@ -68,5 +74,20 @@ public class UserController {
         System.out.println("DuAP!:");
         publisher.publishEvent(new RegistrationClientEvent(user.getEmail(), token.getTokenText()));
         return "ok";
+    }
+
+    @GetMapping(value = "/reset-password")
+    public String resetPassword(@RequestParam("user") String userName) {
+        User user = userService.getUserByName(userName);
+        ResetPasswordToken resetPasswordToken = resetPasswordTokenService.addToken(user);
+        publisher.publishEvent(new ResetPasswordEvent(user.getEmail(), resetPasswordToken.getTokenText()));
+        System.out.println("reset-pass");
+        return "ok";
+    }
+
+    @GetMapping(value = "/dupa")
+    public String dupa(@RequestParam("b") String b) {
+        publisher.publishEvent(new ResetPasswordEvent("wojtekw429@interia.pl", "token"));
+        return "dupa";
     }
 }

@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.wnek.registration.model.RegistrationToken;
+import pl.wnek.registration.model.ResetPasswordToken;
 import pl.wnek.registration.model.User;
+import pl.wnek.registration.token.ResetPasswordTokenService;
 import pl.wnek.registration.token.TokenCreator;
-import pl.wnek.registration.token.TokenService;
 import pl.wnek.registration.service.UserService;
 
 import java.time.LocalDateTime;
@@ -21,10 +21,10 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class TokenServiceTest {
+public class ResetTokenServiceTest {
 
     @Autowired
-    private TokenService tokenService;
+    private ResetPasswordTokenService tokenService;
 
     @Autowired
     private UserService userService;
@@ -37,12 +37,12 @@ public class TokenServiceTest {
     public void shouldAddToken() {
         //given
         User user = new User("user1", "pass1", "example@mail.pl");
-        RegistrationToken token = new RegistrationToken("token", LocalDateTime.now(), user);
+        ResetPasswordToken token = new ResetPasswordToken("token", LocalDateTime.now(), user);
 
         //when
         User addedUser = userService.addUser(user);
-        when(tokenCreator.createRegistrationToken(addedUser)).thenReturn(token);
-        RegistrationToken addedToken = tokenService.addToken(addedUser);
+        when(tokenCreator.createResetToken(addedUser)).thenReturn(token);
+        ResetPasswordToken addedToken = tokenService.addToken(addedUser);
 
         //then
         assertThat(addedToken.getTokenText().length(), greaterThan(1));
@@ -55,14 +55,14 @@ public class TokenServiceTest {
     public void shouldGetToken() {
         //given
         User user = new User("user2", "pass1", "example@mail.pl");
-        RegistrationToken token = new RegistrationToken("tokenText", LocalDateTime.now(), user);
+        ResetPasswordToken token = new ResetPasswordToken("tokenText", LocalDateTime.now(), user);
 
         //when
         User addedUser = userService.addUser(user);
 
-        when(tokenCreator.createRegistrationToken(addedUser)).thenReturn(token);
+        when(tokenCreator.createResetToken(addedUser)).thenReturn(token);
         tokenService.addToken(addedUser);
-        RegistrationToken gettedToken = tokenService.getToken("tokenText");
+        ResetPasswordToken gettedToken = tokenService.getToken("tokenText");
 
         //then
         assertThat(gettedToken.getTokenText(), equalTo(token.getTokenText()));
@@ -77,7 +77,7 @@ public class TokenServiceTest {
     public void shouldNotValidIfTokenIsExpired() {
         //given
         User user = new User("user3", "pass1", "example@mail.pl");
-        RegistrationToken token = new RegistrationToken("text", LocalDateTime.now().minusHours(25), user);
+        ResetPasswordToken token = new ResetPasswordToken("text", LocalDateTime.now().minusHours(25), user);
 
         //when
         boolean isExpired = tokenService.isTokenExpired(token);
@@ -91,7 +91,7 @@ public class TokenServiceTest {
     public void shouldValidIfTokenIsNotExpired() {
         //given
         User user = new User("user3", "pass1", "example@mail.pl");
-        RegistrationToken token = new RegistrationToken("text", LocalDateTime.now().minusHours(23), user);
+        ResetPasswordToken token = new ResetPasswordToken("text", LocalDateTime.now().minusHours(23), user);
 
         //when
         boolean isExpired = tokenService.isTokenExpired(token);
