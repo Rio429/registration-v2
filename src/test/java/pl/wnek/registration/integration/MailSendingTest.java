@@ -37,7 +37,7 @@ public class MailSendingTest {
     @Test
     public void ifUserCanBeRegisterPublishRegistrationEvent() {
         //given
-        User user = new User("user1", "pass1", "example@mail.pl");
+        User user = new User("user1bb", "pass1", "example@mail.pl");
 
         //when
         userController.addUser(user);

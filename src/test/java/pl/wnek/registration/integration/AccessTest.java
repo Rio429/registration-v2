@@ -9,9 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.wnek.registration.controller.UserController;
-import pl.wnek.registration.model.RegistrationToken;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
-import pl.wnek.registration.token.TokenService;
+import pl.wnek.registration.service.TokennService;
 
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +28,7 @@ public class AccessTest {
     private UserController userController;
 
     @Autowired
-    private TokenService tokenService;
+    private TokennService tokenService;
 
     @Test
     public void T01_shouldReturnStatusForbiddenIfUserIsNotLoginOnHomePage() {
@@ -90,7 +90,7 @@ public class AccessTest {
         //given
         User user = new User("register", "register", "register@mail.pl");
         testRestTemplate.postForEntity("/user", user, User.class);
-        RegistrationToken token = tokenService.getToken(2L);
+        Token token = tokenService.getToken(2L);
         String confirmUrl = "/confirm-registration?token=" + token.getTokenText();
 
 

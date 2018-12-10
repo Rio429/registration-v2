@@ -5,9 +5,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.wnek.registration.model.RegistrationToken;
+import pl.wnek.registration.dictionary.TokenType;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
-import pl.wnek.registration.token.TokenService;
+import pl.wnek.registration.service.TokennService;
 import pl.wnek.registration.service.UserService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,7 +23,7 @@ public class TokenIntegrationTest {
     private UserService userService;
 
     @Autowired
-    private TokenService tokenService;
+    private TokennService tokenService;
 
     @Test(expected = IllegalArgumentException.class)
     public void whenAddTwoTokenToOneUser_firstShouldBeDeleted() {
@@ -31,8 +32,8 @@ public class TokenIntegrationTest {
 
         //when
         User addedUser = userService.addUser(user);
-        RegistrationToken fistToken = tokenService.addToken(addedUser);
-        RegistrationToken secondToken = tokenService.addToken(addedUser);
+        Token fistToken = tokenService.addToken(addedUser, TokenType.REGISTRATION);
+        Token secondToken = tokenService.addToken(addedUser, TokenType.REGISTRATION);
 
         //then
         tokenService.getToken(fistToken.getTokenText());
@@ -45,8 +46,8 @@ public class TokenIntegrationTest {
 
         //when
         userService.addUser(user);
-        RegistrationToken addedToken = tokenService.addToken(user);
-        RegistrationToken gettedToken = tokenService.getToken(user);
+        Token addedToken = tokenService.addToken(user, TokenType.REGISTRATION);
+        Token gettedToken = tokenService.getTokenByUserAndTokenType(user.getName(), TokenType.REGISTRATION);
 
         //then
         assertThat(addedToken.getTokenText(), is(gettedToken.getTokenText()));

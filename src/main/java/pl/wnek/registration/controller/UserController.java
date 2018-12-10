@@ -2,13 +2,12 @@ package pl.wnek.registration.controller;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
-import pl.wnek.registration.model.RegistrationToken;
-import pl.wnek.registration.model.ResetPasswordToken;
+import pl.wnek.registration.dictionary.TokenType;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
 import pl.wnek.registration.service.RegistrationClientEvent;
 import pl.wnek.registration.service.ResetPasswordEvent;
-import pl.wnek.registration.token.ResetPasswordTokenService;
-import pl.wnek.registration.token.TokenService;
+import pl.wnek.registration.service.TokennService;
 import pl.wnek.registration.service.UserService;
 
 @RestController
@@ -16,28 +15,31 @@ public class UserController {
 
     private UserService userService;
     private ApplicationEventPublisher publisher;
-    private TokenService tokenService;
-    private ResetPasswordTokenService resetPasswordTokenService;
+    private TokennService tokenService;
 
-    public UserController(UserService userService, ApplicationEventPublisher publisher, TokenService tokenService,
-                          ResetPasswordTokenService resetPasswordTokenService) {
+    public UserController(UserService userService, ApplicationEventPublisher publisher, TokennService tokenService) {
         this.userService = userService;
         this.publisher = publisher;
         this.tokenService = tokenService;
-        this.resetPasswordTokenService = resetPasswordTokenService;
     }
 
     @PostMapping(value = "/user")
     public User addUser(@RequestBody User user) {
         User addedUser = userService.addUser(user);
-        RegistrationToken token = tokenService.addToken(addedUser);
+        Token token = tokenService.addToken(addedUser, TokenType.REGISTRATION);
         publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getTokenText()));
         return addedUser;
     }
 
     @GetMapping(value = "/user")
     public String getUser() {
-        return "Hello World";
+User user = new User("fsdfsd", "dfsfds", "Fdsfds@fdsfds.pl");
+            User addedUser = userService.addUser(user);
+            Token token = tokenService.addToken(addedUser, TokenType.REGISTRATION);
+         tokenService.addToken(addedUser, TokenType.RESET_PASSWORD);
+            publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getTokenText()));
+            return "Fddfdfd";
+//            return addedUser;
     }
 
     @GetMapping(value = "/test")
@@ -49,7 +51,7 @@ public class UserController {
 
     @GetMapping(value = "/confirm-registration")
     public boolean confirmRegistration(@RequestParam("token") String tokenText) {
-        RegistrationToken token = tokenService.getToken(tokenText);
+        Token token = tokenService.getToken(tokenText);
         if(tokenService.isTokenExpired(token)) {
             return false;
         }
@@ -70,7 +72,7 @@ public class UserController {
         System.out.println("DuAP!:");
 
         User user = userService.getUserByName(userName);
-        RegistrationToken token = tokenService.addToken(user);
+        Token token = tokenService.addToken(user, TokenType.REGISTRATION);
         System.out.println("DuAP!:");
         publisher.publishEvent(new RegistrationClientEvent(user.getEmail(), token.getTokenText()));
         return "ok";
@@ -79,7 +81,7 @@ public class UserController {
     @GetMapping(value = "/reset-password")
     public String resetPassword(@RequestParam("user") String userName) {
         User user = userService.getUserByName(userName);
-        ResetPasswordToken resetPasswordToken = resetPasswordTokenService.addToken(user);
+        Token resetPasswordToken = tokenService.addToken(user, TokenType.RESET_PASSWORD);
         publisher.publishEvent(new ResetPasswordEvent(user.getEmail(), resetPasswordToken.getTokenText()));
         System.out.println("reset-pass");
         return "ok";

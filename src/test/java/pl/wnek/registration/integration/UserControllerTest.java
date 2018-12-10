@@ -9,12 +9,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.wnek.registration.controller.UserController;
-import pl.wnek.registration.model.RegistrationToken;
-import pl.wnek.registration.model.ResetPasswordToken;
+import pl.wnek.registration.dictionary.TokenType;
+import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
-import pl.wnek.registration.repository.TokenDao;
-import pl.wnek.registration.token.ResetPasswordTokenService;
-import pl.wnek.registration.token.TokenService;
+import pl.wnek.registration.service.TokennService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
@@ -31,13 +29,7 @@ public class UserControllerTest {
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private TokenDao tokenDao;
-
-    @Autowired
-    private ResetPasswordTokenService resetPasswordTokenService;
+    private TokennService tokennService;
 
     private String url;
 
@@ -62,12 +54,12 @@ public class UserControllerTest {
     @Test
     public void shouldAddTokenToUser() {
         //given
-        User user = new User("User1", "pass1", "wojtekw429@interia.pl");
+        User user = new User("User3ff21", "pass1", "wojtekw429@interia.pl");
 
         //when
         testRestTemplate.postForEntity(url, user, User.class);
 
-        RegistrationToken token = tokenService.getToken(2L);
+        Token token = tokennService.getTokenByUserAndTokenType(user.getName(), TokenType.REGISTRATION);
 
         //then
         assertThat(token.getUser().getName(), is(user.getName()));
@@ -78,7 +70,7 @@ public class UserControllerTest {
         //given //TODO poprawic 2L
         User user = new User("User1", "pass1", "example@mail.pl");
         testRestTemplate.postForEntity(url, user, User.class);
-        RegistrationToken token = tokenService.getToken(2L);
+        Token token = tokennService.getToken(2L);
         String confirmUrl = "/confirm-registration?token=" + token.getTokenText();
 
         //when
@@ -94,7 +86,7 @@ public class UserControllerTest {
         User user = new User("User2", "pass1", "example@mail.pl");
         testRestTemplate.postForEntity(url, user, User.class);
         testRestTemplate.getForEntity("/resend-mail", String.class);
-        RegistrationToken token = tokenService.getToken(2L);
+        Token token = tokennService.getToken(2L);
         String confirmUrl = "/confirm-registration?token=" + token.getTokenText();
 
         //when
@@ -110,7 +102,7 @@ public class UserControllerTest {
         //given
         User user = new User("User2", "pass1", "example@mail.pl");
         testRestTemplate.postForEntity(url, user, User.class);
-        RegistrationToken token = tokenService.getToken(2L);
+        Token token = tokennService.getToken(2L);
         String confirmUrl = "/confirm-registration?token=" + token.getTokenText();
 
         //when
