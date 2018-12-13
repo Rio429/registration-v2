@@ -28,11 +28,15 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers( "/user", "/confirm-registration**", "/resend-mail**", "/console/**", "/test",
-                        "/reset-password/**", "/dupa/**")
-                .permitAll()
-        .anyRequest().fullyAuthenticated().and().httpBasic();
+//        http.authorizeRequests()
+//                .antMatchers( "/user", "/confirm-registration**", "/resend-mail**", "/console/**", "/test",
+//                        "/reset-password/**", "/dupa/**")
+//                .permitAll()
+//                .antMatchers("/principal**")
+//                .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
+        http.authorizeRequests().antMatchers("/borszcz").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
+        .and().httpBasic();
+//        .anyRequest().fullyAuthenticated().and().httpBasic();
 //        http.authorizeRequests().anyRequest().permitAll();
         http.headers().frameOptions().sameOrigin();
         http.csrf().disable();

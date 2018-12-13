@@ -104,4 +104,19 @@ public class AccessTest {
         //then
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
     }
+
+    @Test
+    public void T06_shouldhasAccess() {
+        //given
+        //given
+        String url = "/principal";
+        User user = new User("fdsfasdfads", "Fsadfsdaf", "dsfsdfsda");
+
+        //when
+        ResponseEntity<String> response1 = testRestTemplate.getForEntity("/borszcz?userName=fdsfasdfads", String.class);
+        ResponseEntity<String> response = testRestTemplate.getForEntity(url, String.class);
+
+        //then
+        assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+    }
 }

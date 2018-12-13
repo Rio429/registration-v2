@@ -1,14 +1,12 @@
 package pl.wnek.registration.controller;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pl.wnek.registration.dictionary.TokenType;
 import pl.wnek.registration.model.Token;
 import pl.wnek.registration.model.User;
-import pl.wnek.registration.service.RegistrationClientEvent;
-import pl.wnek.registration.service.ResetPasswordEvent;
-import pl.wnek.registration.service.TokennService;
-import pl.wnek.registration.service.UserService;
+import pl.wnek.registration.service.*;
 
 @RestController
 public class UserController {
@@ -16,11 +14,14 @@ public class UserController {
     private UserService userService;
     private ApplicationEventPublisher publisher;
     private TokennService tokenService;
+    private SecureService secureService;
 
-    public UserController(UserService userService, ApplicationEventPublisher publisher, TokennService tokenService) {
+    public UserController(UserService userService, ApplicationEventPublisher publisher, TokennService tokenService,
+                          SecureService secureService) {
         this.userService = userService;
         this.publisher = publisher;
         this.tokenService = tokenService;
+        this.secureService = secureService;
     }
 
     @PostMapping(value = "/user")
@@ -38,6 +39,7 @@ User user = new User("fsdfsd", "dfsfds", "Fdsfds@fdsfds.pl");
             Token token = tokenService.addToken(addedUser, TokenType.REGISTRATION);
          tokenService.addToken(addedUser, TokenType.RESET_PASSWORD);
             publisher.publishEvent(new RegistrationClientEvent(addedUser.getEmail(), token.getTokenText()));
+            secureService.addSecure(user);
             return "Fddfdfd";
 //            return addedUser;
     }
@@ -86,6 +88,30 @@ User user = new User("fsdfsd", "dfsfds", "Fdsfds@fdsfds.pl");
         System.out.println("reset-pass");
         return "ok";
     }
+
+    @GetMapping(value = "borszcz")
+    public String safds(@RequestParam("userName") String userName) {
+        User user = new User("fsdfsd", "dfsfds", "Fdsfds@fdsfds.pl");
+        User addedUser = userService.addUser(user);
+        secureService.addSecure(user);
+        return "FDSFDSFSFSDFDS";
+    }
+
+    @GetMapping(value = "/change-password-request")
+    public void changePassowordRequest(@RequestParam("tokenText") String tokenText, @RequestParam("name") String userName) {
+        Token token = tokenService.getToken(tokenText);
+        if(tokenService.isTokenExpired(token)) {
+            ;
+        }
+        User user = userService.getUserByName(userName);
+        secureService.addSecure(user);
+
+//        Token resetPasswordToken = tokenService.addToken(user, TokenType.RESET_PASSWORD);
+//        publisher.publishEvent(new ResetPasswordEvent(user.getEmail(), resetPasswordToken.getTokenText()));
+//        System.out.println("reset-pass");
+//        return "ok";
+    }
+
 
     @GetMapping(value = "/dupa")
     public String dupa(@RequestParam("b") String b) {
